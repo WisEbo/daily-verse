@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Webpage | API Project</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #verse-container {
+            padding: 32px 16px;
+            background-color:rgba(128, 128, 128, 0.549);
+        }
+
+        #scripture {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 50px;
+            color: white;
+        }
+        
+        #reference {
+            font-size: 1.5em;
+            font-style: italic;
+            text-align: center;
+        }
+
+        body {
+            background-image: url(images/skies_light.png);
+            min-height: 500px;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .w3-button:hover {
+            transform: scale(1.05);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .w3-card-4:hover {
+            transform: scale(1.05);
+            transition: all 0.3s ease-in-out;
+        }
+
+    </style>
+</head>
+<body>
+ 
+    
+<div class="w3-content" style="max-width:1080px;margin-top:46px">
+    <h1 class="w3-center">Daily Verse</h1>
+
+    <!-- Verse and Reference -->
+    <div id="verse-container" class="w3-container w3-card" style="display: none;">
+        <div class="w3-container">
+            <p id="scripture"></p>
+            <p id="reference"></p>
+        </div>
+    </div>
+    
+    <br>
+
+    <!-- Buttons:  Random Verse Btn, Search btn, Change text colour btn, Reset btn -->
+    <div class="w3-center">
+        <button id="random_verse" class="w3-button w3-green w3-round w3-border w3-hover-shadow" onclick="getRandomVerse()">Get Random Verse</button>
+        <p id="search-reference"></p>
+    </div>
+
+    <div id="3buttons" class="w3-container" style="display: none;">
+        <div class="w3-row-padding">
+            <div class="w3-third w3-center w3-animate-left">
+                <div class="w3-card-4 w3-hover-shadow">
+                    <div class="w3-container">
+                        <h4 class="w3-text-white">Looking for a specific verse?</h4> 
+                        <div class="w3-center w3-padding-16 w3-margin">
+                            <button id="show_search_container_btn" class="w3-button w3-card-4 w3-round w3-border w3-hover-shadow">Bible Verse search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w3-third w3-center w3-animate-top">
+                <div class="w3-card-4 w3-hover-shadow">
+                    <div class="w3-container">
+                        <h4 class="w3-text-white">Change the text colour?</h4> 
+                        <div class="w3-center w3-padding-16 w3-margin">
+                            <button id="change_colour_btn" class="w3-button w3-card-4 w3-round w3-border w3-hover-shadow">Change Text Colour</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w3-third w3-center w3-animate-right">
+                <div class="w3-card-4 w3-hover-shadow">
+                    <div class="w3-container">
+                        <h4 class="w3-text-white">Reset?</h4> 
+                        <div class="w3-center w3-padding-16 w3-margin">
+                            <button id="reset" class="w3-button w3-card-4 w3-round w3-border w3-hover-shadow">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    <!-- Manual verse search section -->
+    <div id="verse_search_container" class="w3-card w3-padding-16 w3-card-4" style="display: none;">
+        <div class="w3-container w3-light-grey w3-text-black w3-margin w3-padding-32">
+
+            <div class="w3-container">
+                <label>Version:</label>
+                <select id="version" name="versions" class="w3-input">
+                    <option value="en-kjv">en-kjv</option>
+                    <option value="en-asv">en-asv</option>
+                </select>            
+            </div>
+            <br>
+            <div class="w3-container">
+                <label>Book:</label>
+                <input type="text" id="book" class="w3-input" placeholder="Enter book (e.g. Genesis)"/>
+            </div>
+            <br>
+            <div class="w3-container">
+                <label">Chapter:</label>
+                <input type="number" id="chapter" class="w3-input" placeholder="Enter chapter (e.g. 1)"/>        
+            </div>
+            <br>
+            <div  class="w3-container">
+                <label>Verse:</label>
+                <input type="number" id="verse" class="w3-input" placeholder="Enter verse (e.g. 1)"/>
+            </div>
+    
+            <div class="w3-padding-16 w3-center">
+                <p id="required"></p>
+                <button class="w3-button w3-light-grey w3-round w3-border w3-hover-shadow" onclick="getVerse()">Get Verse</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+
+<script>
+    // show and hide manual search section
+    $("#show_search_container_btn").click(function(){
+        $("#verse_search_container").fadeToggle()
+    });
+    
+    // select random text colour to change verse text colour
+    var colours = ['Red', 'Green', 'Blue', 'Yellow', 'Purple', 'Orange','Aqua', 'Magenta','lawngreen','lemonchiffon','lightblue','lightcoral', 'lime'];
+    
+ 	    
+    $("#change_colour_btn").click(function(){
+      var random_colour = colours[Math.floor(Math.random() * colours.length)];
+      $("p").css("color", random_colour);
+    });
+
+    // reset colour and input fields
+    $("#reset").click(function(){
+        $("p").css("color", "");
+        $("#book").val('');
+        $("#chapter").val('');
+        $("#verse").val('');
+        $("#required").text('')
+        $("#verse_search_container").fadeOut()
+    });
+
+    // reads input fields and fetches data from the bible api
+    function getVerse() {
+
+        var version = document.getElementById('version').value;
+        var book = document.getElementById('book').value.toLowerCase();
+        var chapter = document.getElementById('chapter').value;
+        var verse = document.getElementById('verse').value;
+
+        if (book == "" | chapter == "" | verse == "") {
+            $("#required").text('Complete all fields: Book❗️ Chapter❗️ Verse❗️')}
+        else {
+             $("#required").text('')
+             
+             var api_url = `https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${version}/books/${book}/chapters/${chapter}/verses/${verse}.json`;
+            // fetches data from the bible api - done executes when the api request is successful and fail executes if not and displayed a message
+             $.get(api_url)
+             .done(function(data) {
+                 $("#scripture").text(data.text);
+                 $("#reference").text(`${book.charAt(0).toUpperCase() + book.slice(1)} ${chapter}:${verse}`);
+     
+                 $("#scripture, #reference, #verse-container").toggle();
+                 $("#scripture, #reference, #verse-container").fadeIn(1000);
+             })
+             .fail(function() {
+                 $("#scripture").html('Oops!🫠 No verse found. <br> Please enter a valid book, chapter and verse and try again.');
+                 $("#reference").text('');
+             });
+        }    
+    }
+
+    // created a dictionary of the number of chapters in the book and the total number of verses in the chapter to help get set up getting random numbers within the range
+    // fetches data from the api - passing random chapters and verses to the api string
+    function getRandomVerse() {
+    
+        var proverbs = {
+            1: 33,  2: 22,  3: 35,  4: 27,  5: 23,
+            6: 35,  7: 27,  8: 36,  9: 18, 10: 32,
+            11: 31, 12: 28, 13: 25, 14: 35, 15: 33,
+            16: 33, 17: 28, 18: 24, 19: 29, 20: 30,
+            21: 31, 22: 29, 23: 35, 24: 34, 25: 28,
+            26: 28, 27: 27, 28: 28, 29: 27, 30: 33, 
+            31: 31
+        };
+
+        var ecclesiastes = {
+            1: 18,  2: 26,  3: 22,  4: 16,  5: 20,
+            6: 12,  7: 29,  8: 17,  9: 18, 10: 20,
+            11: 10, 12: 14
+        };
+
+        // selects between two books in the bible using random()
+        var books = ['proverbs','ecclesiastes'];
+
+        var random_book = Math.floor(Math.random() * books.length);
+        var book = books[random_book]
+        console.log(book)
+
+        var random_chapter = 0
+        var number_of_verses = 0
+
+        // depending on which book, generates a random chapter between 1 and the total number of chapters in that book,
+        //  this is used as key in the dictionary to get the total number of verses value
+        if (book == "proverbs"){
+            random_chapter = Math.floor(Math.random() * 31) + 1; 
+            total_verses = proverbs[random_chapter];
+        }
+        else {
+            random_chapter = Math.floor(Math.random() * 12) + 1; 
+            total_verses = ecclesiastes[random_chapter];
+        }
+
+        // using random generate a random versom between 1 and the total number of versed in the random chapter above
+        var random_verse = Math.floor(Math.random() * total_verses) + 1;
+
+
+        var version = document.getElementById('version').value;
+        console.log(version)
+
+        // passing in the values needed to construct the api url - selected version - random book, chapter and verse
+
+        var api_url = `https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${version}/books/${book}/chapters/${random_chapter}/verses/${random_verse}.json`;
+        console.log(api_url);
+        
+        // fetches data from the bible api with the above api url and handles request success or failure
+        $.get(api_url)
+        .done(function(data) {        
+            $("#scripture").text(data.text);
+            $("#reference").text(`${book.charAt(0).toUpperCase() + book.slice(1)} ${random_chapter}:${random_verse}`);
+
+            $("#scripture, #reference, #verse-container").toggle();
+            $("#scripture, #reference, #verse-container").fadeIn(2000);
+        })
+        .fail(function() {
+            $("#scripture").html('Oops!🫠 No verse found. <br> Please try again.');
+            $("#reference").text('');
+        });
+    
+    }
+
+    // calls generate random verse to display on arrival to the page
+
+    window.onload = function() {
+        getRandomVerse();
+        $("#3buttons").fadeIn(500);
+    }
+
+</script>
+
+</body>
+</html>
